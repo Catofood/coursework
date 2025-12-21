@@ -163,63 +163,189 @@ API документация предоставляется через Swagger U
 
 *Сообщения Kafka*: оба типа сообщений наследуют от `BaseUserMessage` с полями `TelegramUserId` и `OccuredAt`. Сообщение `UserPerformedRequestMessage` содержит `RequestType` (Search, RoomSchedule, GroupSchedule, TeacherSchedule) и опциональное `GroupName`. Сообщение `UserUpdatedMessage` содержит `UpdateType` (Registered, SubscribedToGroup, SetDefaultSettings, SetCustomSettings) и опциональное `SubscriptionGroupName`.
 
-*REST API endpoints*: StatisticsController предоставляет следующие методы (все методы GET с базовым URL `/api/statistics`). Описание функциональности каждой группы эндпоинтов представлено ниже с соответствующими диаграммами.
+*REST API endpoints*: StatisticsController предоставляет следующие методы (все методы GET с базовым URL `/api/statistics`). Описание функциональности каждого эндпоинта представлено ниже с соответствующими примерами запросов и ответов.
 
-// На рисунке @fig-endpoint-registered-users показана структура эндпоинта получения количества зарегистрированных пользователей.
-// 
-// #figure(
-//   image("images/screenshot_1.png", width: 70%),
-//   caption: [Структура эндпоинта регистрации пользователей]
-// ) <fig-endpoint-registered-users>
+*Эндпоинт получения количества зарегистрированных пользователей*. На рисунке @fig-registered-users-request представлена структура запроса к эндпоинту `/registered-users-count`, который позволяет получить количество пользователей, зарегистрировавшихся за указанный временной промежуток. Эндпоинт принимает опциональные параметры `from` и `to` типа `DateTimeOffset` для определения границ периода анализа.
 
-// На рисунке @fig-endpoint-schedule-viewers показана архитектура эндпоинтов для получения статистики просмотров расписания по типам.
-// 
-// #figure(
-//   image("images/screenshot_2.png", width: 70%),
-//   caption: [Структура эндпоинтов статистики просмотров расписания]
-// ) <fig-endpoint-schedule-viewers>
+#figure(
+  image("images/registered-users-count-1.png", width: 90%),
+  caption: [Структура запроса к эндпоинту получения количества зарегистрированных пользователей]
+) <fig-registered-users-request>
 
-// На рисунке @fig-endpoint-top-groups-subscribers показана схема получения топ групп по количеству подписчиков.
-// 
-// #figure(
-//   image("images/screenshot_3.png", width: 70%),
-//   caption: [Структура эндпоинта получения топ групп по подписчикам]
-// ) <fig-endpoint-top-groups-subscribers>
+На рисунке @fig-registered-users-response показан пример успешного ответа от эндпоинта с возвращаемым значением типа `integer`, представляющим общее количество зарегистрировавшихся пользователей за заданный период.
 
-// На рисунке @fig-endpoint-top-groups-requests показана организация эндпоинта для получения топ групп по запросам расписания.
-// 
-// #figure(
-//   image("images/screenshot_4.png", width: 70%),
-//   caption: [Структура эндпоинта получения топ групп по запросам]
-// ) <fig-endpoint-top-groups-requests>
+#figure(
+  image("images/registered-users-count-2.png", width: 90%),
+  caption: [Пример ответа эндпоинта получения количества зарегистрированных пользователей]
+) <fig-registered-users-response>
 
-// На рисунке @fig-endpoint-group-schedule-count показана структура эндпоинта подсчёта общего количества запросов расписания групп.
-// 
-// #figure(
-//   image("images/screenshot_5.png", width: 70%),
-//   caption: [Структура эндпоинта получения количества запросов расписания групп]
-// ) <fig-endpoint-group-schedule-count>
+*Эндпоинт получения количества уникальных пользователей, просмотревших расписание*. На рисунке @fig-unique-schedule-viewers-request представлена структура запроса к эндпоинту `/unique-schedule-viewers-count`, предназначенному для определения количества уникальных пользователей, которые обращались к любому типу расписания за указанный временной промежуток.
 
-// На рисунке @fig-endpoint-settings-statistics показана архитектура эндпоинтов для получения статистики по пользовательским настройкам.
-// 
-// #figure(
-//   image("images/screenshot_6.png", width: 70%),
-//   caption: [Структура эндпоинтов получения статистики по настройкам пользователей]
-// ) <fig-endpoint-settings-statistics>
+#figure(
+  image("images/unique-schedule-viewers-count.png", width: 90%),
+  caption: [Структура запроса к эндпоинту получения количества уникальных пользователей, просмотревших расписание]
+) <fig-unique-schedule-viewers-request>
 
-// На рисунке @fig-endpoint-custom-settings-count показена структура эндпоинта получения количества пользователей, изменявших настройки.
-// 
-// #figure(
-//   image("images/screenshot_7.png", width: 70%),
-//   caption: [Структура эндпоинта получения количества пользователей со сменённым типом настроек]
-// ) <fig-endpoint-custom-settings-count>
+На рисунке @fig-unique-schedule-viewers-response показан результат выполнения запроса, содержащий целочисленное значение количества уникальных пользователей, воспользовавшихся функциональностью просмотра расписания.
 
-// На рисунке @fig-endpoint-search-statistics показана организация эндпоинтов для получения статистики по поисковым запросам.
-// 
-// #figure(
-//   image("images/screenshot_8.png", width: 70%),
-//   caption: [Структура эндпоинтов получения статистики по поисковым запросам]
-// ) <fig-endpoint-search-statistics>
+#figure(
+  image("images/unique-schedule-viewers-count-2.png", width: 90%),
+  caption: [Пример ответа эндпоинта получения количества уникальных пользователей, просмотревших расписание]
+) <fig-unique-schedule-viewers-response>
+
+*Эндпоинт получения количества пользователей, просмотревших расписание аудиторий*. На рисунке @fig-unique-room-viewers-request представлена структура запроса к эндпоинту `/unique-room-schedule-viewers-count`, обеспечивающему получение статистики по количеству уникальных пользователей, запрашивавших расписание занятости аудиторий.
+
+#figure(
+  image("images/unique-room-schedule-viewers-count-1.png", width: 90%),
+  caption: [Структура запроса к эндпоинту получения количества пользователей, просмотревших расписание аудиторий]
+) <fig-unique-room-viewers-request>
+
+На рисунке @fig-unique-room-viewers-response показан пример ответа эндпоинта с числовым значением, отражающим количество уникальных пользователей, обратившихся к расписанию аудиторий за указанный период.
+
+#figure(
+  image("images/unique-room-schedule-viewers-count-2.png", width: 90%),
+  caption: [Пример ответа эндпоинта получения количества пользователей, просмотревших расписание аудиторий]
+) <fig-unique-room-viewers-response>
+
+*Эндпоинт получения количества пользователей, просмотревших расписание групп*. На рисунке @fig-unique-group-viewers-request представлена структура запроса к эндпоинту `/unique-group-schedule-viewers-count`, предназначенному для определения количества уникальных пользователей, запрашивавших расписание учебных групп.
+
+#figure(
+  image("images/unique-group-schedule-viewers-count-1.png", width: 90%),
+  caption: [Структура запроса к эндпоинту получения количества пользователей, просмотревших расписание групп]
+) <fig-unique-group-viewers-request>
+
+На рисунке @fig-unique-group-viewers-response показан результат выполнения запроса, содержащий целочисленное значение количества уникальных пользователей, воспользовавшихся функцией просмотра расписания групп.
+
+#figure(
+  image("images/unique-group-schedule-viewers-count-2.png", width: 90%),
+  caption: [Пример ответа эндпоинта получения количества пользователей, просмотревших расписание групп]
+) <fig-unique-group-viewers-response>
+
+*Эндпоинт получения количества пользователей, просмотревших расписание преподавателей*. На рисунке @fig-unique-teacher-viewers-request представлена структура запроса к эндпоинту `/unique-teacher-schedule-viewers-count`, обеспечивающему получение статистики по количеству уникальных пользователей, просматривавших расписание занятий преподавателей.
+
+#figure(
+  image("images/unique-teacher-schedule-viewers-count-1.png", width: 90%),
+  caption: [Структура запроса к эндпоинту получения количества пользователей, просмотревших расписание преподавателей]
+) <fig-unique-teacher-viewers-request>
+
+На рисунке @fig-unique-teacher-viewers-response показан пример успешного ответа эндпоинта с числовым значением, представляющим количество уникальных пользователей, обратившихся к расписанию преподавателей за заданный временной интервал.
+
+#figure(
+  image("images/unique-teacher-schedule-viewers-count-2.png", width: 90%),
+  caption: [Пример ответа эндпоинта получения количества пользователей, просмотревших расписание преподавателей]
+) <fig-unique-teacher-viewers-response>
+
+*Эндпоинт получения топ групп по количеству подписчиков*. На рисунке @fig-top-groups-subscribers-request представлена структура запроса к эндпоинту `/top-groups-by-subscribers`, предназначенному для получения рейтинга наиболее популярных учебных групп по количеству уникальных подписчиков. Эндпоинт принимает параметр `top` для определения размера выборки (от 1 до 100) и опциональный параметр `to` для указания конечной даты анализа.
+
+#figure(
+  image("images/top-groups-by-subscribers-1.png", width: 90%),
+  caption: [Структура запроса к эндпоинту получения топ групп по количеству подписчиков]
+) <fig-top-groups-subscribers-request>
+
+На рисунке @fig-top-groups-subscribers-response показан пример ответа эндпоинта, содержащий массив объектов с информацией о названии группы и количестве её подписчиков, упорядоченный по убыванию количества подписчиков.
+
+#figure(
+  image("images/top-groups-by-subscribers-2.png", width: 90%),
+  caption: [Пример ответа эндпоинта получения топ групп по количеству подписчиков]
+) <fig-top-groups-subscribers-response>
+
+*Эндпоинт получения топ групп по количеству запросов расписания*. На рисунке @fig-top-groups-requests-request представлена структура запроса к эндпоинту `/top-groups-by-requests`, обеспечивающему получение рейтинга учебных групп по количеству запросов их расписания за указанный период. Эндпоинт принимает параметр `top` для определения размера выборки и опциональные параметры `from` и `to` для временных границ анализа.
+
+#figure(
+  image("images/top-groups-by-requests-1.png", width: 90%),
+  caption: [Структура запроса к эндпоинту получения топ групп по количеству запросов расписания]
+) <fig-top-groups-requests-request>
+
+На рисунке @fig-top-groups-requests-response показан результат выполнения запроса, представляющий собой массив объектов с данными о названии группы и количестве запросов её расписания, отсортированный в порядке убывания популярности.
+
+#figure(
+  image("images/top-groups-by-requests-2.png", width: 90%),
+  caption: [Пример ответа эндпоинта получения топ групп по количеству запросов расписания]
+) <fig-top-groups-requests-response>
+
+*Эндпоинт получения общего количества запросов расписания групп*. На рисунке @fig-group-schedule-count-request представлена структура запроса к эндпоинту `/group-schedule-requests-count`, предназначенному для определения общего количества всех запросов расписания учебных групп за заданный временной промежуток.
+
+#figure(
+  image("images/group-schedule-requests-count-1.png", width: 90%),
+  caption: [Структура запроса к эндпоинту получения общего количества запросов расписания групп]
+) <fig-group-schedule-count-request>
+
+На рисунке @fig-group-schedule-count-response показан пример ответа эндпоинта с целочисленным значением, отражающим суммарное количество запросов к расписанию групп за указанный период.
+
+#figure(
+  image("images/group-schedule-requests-count-2.png", width: 90%),
+  caption: [Пример ответа эндпоинта получения общего количества запросов расписания групп]
+) <fig-group-schedule-count-response>
+
+*Эндпоинт получения количества пользователей с кастомными настройками*. На рисунке @fig-custom-settings-request представлена структура запроса к эндпоинту `/users-with-custom-settings-count`, обеспечивающему получение текущего количества пользователей, использующих персонализированные настройки системы на указанную дату.
+
+#figure(
+  image("images/users-with-custom-settings-count-1.png", width: 90%),
+  caption: [Структура запроса к эндпоинту получения количества пользователей с кастомными настройками]
+) <fig-custom-settings-request>
+
+На рисунке @fig-custom-settings-response показан результат выполнения запроса, содержащий числовое значение количества пользователей, активно применяющих персонализированные настройки на момент запроса.
+
+#figure(
+  image("images/users-with-custom-settings-count-2.png", width: 90%),
+  caption: [Пример ответа эндпоинта получения количества пользователей с кастомными настройками]
+) <fig-custom-settings-response>
+
+*Эндпоинт получения количества пользователей с настройками по умолчанию*. На рисунке @fig-default-settings-request представлена структура запроса к эндпоинту `/users-with-default-settings-count`, предназначенному для определения текущего количества пользователей, использующих стандартные настройки системы.
+
+#figure(
+  image("images/users-with-default-settings-count-1.png", width: 90%),
+  caption: [Структура запроса к эндпоинту получения количества пользователей с настройками по умолчанию]
+) <fig-default-settings-request>
+
+На рисунке @fig-default-settings-response показан пример ответа эндпоинта с целочисленным значением, отражающим количество пользователей, применяющих стандартную конфигурацию настроек на указанную дату.
+
+#figure(
+  image("images/users-with-default-settings-count-2.png", width: 90%),
+  caption: [Пример ответа эндпоинта получения количества пользователей с настройками по умолчанию]
+) <fig-default-settings-response>
+
+*Эндпоинт получения количества пользователей, изменявших настройки*. На рисунке @fig-set-custom-settings-request представлена структура запроса к эндпоинту `/users-who-set-custom-settings-count`, обеспечивающему получение статистики по количеству уникальных пользователей, выполнявших операции по настройке персонализированных параметров системы за указанный временной период.
+
+#figure(
+  image("images/users-who-set-custom-settings-count-1.png", width: 90%),
+  caption: [Структура запроса к эндпоинту получения количества пользователей, изменявших настройки]
+) <fig-set-custom-settings-request>
+
+На рисунке @fig-set-custom-settings-response показан результат выполнения запроса, содержащий числовое значение количества уникальных пользователей, осуществлявших изменение настроек в заданном временном интервале.
+
+#figure(
+  image("images/users-who-set-custom-settings-count-2.png", width: 90%),
+  caption: [Пример ответа эндпоинта получения количества пользователей, изменявших настройки]
+) <fig-set-custom-settings-response>
+
+*Эндпоинт получения количества пользователей, выполнявших поиск*. На рисунке @fig-users-searched-request представлена структура запроса к эндпоинту `/unique-users-who-searched-count`, предназначенному для определения количества уникальных пользователей, использовавших функциональность поиска за указанный временной промежуток.
+
+#figure(
+  image("images/unique-users-who-searched-count-1.png", width: 90%),
+  caption: [Структура запроса к эндпоинту получения количества пользователей, выполнявших поиск]
+) <fig-users-searched-request>
+
+На рисунке @fig-users-searched-response показан пример ответа эндпоинта с целочисленным значением, представляющим количество уникальных пользователей, обратившихся к поисковой функциональности системы.
+
+#figure(
+  image("images/unique-users-who-searched-count-2.png", width: 90%),
+  caption: [Пример ответа эндпоинта получения количества пользователей, выполнявших поиск]
+) <fig-users-searched-response>
+
+*Эндпоинт получения общего количества поисковых запросов*. На рисунке @fig-search-count-request представлена структура запроса к эндпоинту `/search-requests-count`, обеспечивающему получение суммарного количества всех поисковых операций, выполненных в системе за заданный период времени.
+
+#figure(
+  image("images/search-requests-count-1.png", width: 90%),
+  caption: [Структура запроса к эндпоинту получения общего количества поисковых запросов]
+) <fig-search-count-request>
+
+На рисунке @fig-search-count-response показан результат выполнения запроса, содержащий числовое значение общего количества поисковых запросов, зарегистрированных системой за указанный временной интервал.
+
+#figure(
+  image("images/search-requests-count-2.png", width: 90%),
+  caption: [Пример ответа эндпоинта получения общего количества поисковых запросов]
+) <fig-search-count-response>
 
 === Используемые ресурсы
 
@@ -333,7 +459,8 @@ HTTP Response
     [GroupName], [string], [Название академической группы], [опционально],
     [RequestType], [enum], [Search, RoomSchedule, GroupSchedule, TeacherSchedule], [не null],
     [UpdateType], [enum], [Registered, SubscribedToGroup, SetDefaultSettings, SetCustomSettings], [не null],
-    [SubscriptionGroupName], [string?], [Название подписанной группы], [опционально],
+    [SubscriptionGroup
+    Name], [string?], [Название подписанной группы], [опционально],
     [From], [DateTimeOffset?], [Начало периода фильтрации], [опционально],
     [To], [DateTimeOffset?], [Конец периода фильтрации], [From <= To],
   ),
@@ -345,27 +472,12 @@ HTTP Response
 
 *PostgreSQL база данных* содержит следующие таблицы: `users` (хранит информацию о пользователях); `groups` (хранит информацию о группах); `requests` (хранит запросы пользователей); `updates` (хранит события обновления); `__EFMigrationsHistory` (служебная таблица EF Core для отслеживания миграций).
 
-*Структура файлов проекта*
+На рисунке @fig-project-structure показана иерархическая организация структуры проекта микросервиса SuaiScheduleBotAnalytics, включая разделение исходного кода на логические слои в соответствии с принципами Clean Architecture, а также файлы конфигурации для различных окружений.
 
-```
-SuaiScheduleBotAnalytics/
-├── src/
-│   ├── SuaiScheduleBotAnalytics.Domain/        # Доменные модели
-│   ├── SuaiScheduleBotAnalytics.Application/   # Бизнес-логика, MediatR
-│   │   ├── Kafka/                              # Kafka consumers
-│   │   ├── Commands/                           # Команды (create, update)
-│   │   ├── Queries/                            # Запросы (read)
-│   │   └── Validators/                         # Валидаторы FluentValidation
-│   ├── SuaiScheduleBotAnalytics.DataLayer.EF/  # EF Core, репозитории
-│   │   ├── Persistence/                        # DbContext, конфигурация
-│   │   └── Migrations/                         # Миграции БД
-│   ├── SuaiScheduleBotAnalytics.WebApi/        # REST API
-│   │   ├── Program.cs                          # Конфигурация приложения
-│   │   └── StatisticsController.cs             # API endpoints
-│   └── SuaiScheduleBotAnalytics.Models/        # Модели (entities, exceptions)
-├── docker-compose-dev.yml                       # Dev окружение
-└── docker-compose-production.yml                # Production окружение
-```
+#figure(
+  image("images/solution-file-structure.png", width: 85%),
+  caption: [Структура файлов и каталогов микросервиса SuaiScheduleBotAnalytics]
+) <fig-project-structure>
 
 == Разработка алгоритмов
 
@@ -510,10 +622,10 @@ SuaiScheduleBotAnalytics/
 + Выполнение ToListAsync для загрузки отфильтрованных данных
 + Группировка по названию группы (Group.Name)
 + Для каждой группы подсчитывается TotalRequests = Count() всех запросов (включая дубликаты)
-+ Маппинг в TopGroupByRequestsDto с полями GroupName и TotalRequests
++ Маппинг в TopGroupByRequestsResponseModel с полями GroupName и TotalRequests
 + Сортировка по TotalRequests в порядке убывания (OrderByDescending)
 + Ограничение результата до top элементов через Take(top)
-+ Возврат списка TopGroupByRequestsDto клиенту
++ Возврат списка TopGroupByRequestsResponseModel клиенту
 
 === Алгоритм получения топ групп по уникальным подписчикам
 
@@ -587,7 +699,7 @@ SuaiScheduleBotAnalytics/
 
 *Функции и методы*: все публичные методы именуются в стиле PascalCase с глаголами в названии, такими как Get, Set, Create, Update, Delete, Process (примеры: GetRegisteredUsersCount(), Consume()).
 
-*Классы и типы*: все классы, интерфейсы и перечисления используют стиль PascalCase. Доменные модели имеют суффикс Entity (примеры: UserEntity, GroupEntity). Kafka потребители имеют суффикс Consumer (примеры: UserPerformedRequestConsumer). MediatR объекты имеют суффиксы Query, Command, Handler. REST контроллеры имеют суффикс Controller. Интерфейсы имеют префикс I (примеры: IAnalyticsDbContext, IAnalyticsReadRepository).
+*Классы и типы*: все классы, интерфейсы и перечисления используют стиль PascalCase. Доменные модели имеют суффикс Entity (примеры: UserEntity, GroupEntity). Kafka потребители имеют суффикс Consumer (примеры: UserPerformedRequestConsumer). MediatR объекты имеют суффиксы Query, Command, Handler. REST контроллеры имеют суффикс Controller. Интерфейсы имеют префикс I (пример: IAnalyticsDbContext).
 
 *Модули и пространства имен*: структурированы по архитектурным слоям (Application, Domain, Infrastructure) с дополнительными папками для группировки логики (Kafka, Commands, Queries, Persistence).
 
@@ -611,7 +723,7 @@ SuaiScheduleBotAnalytics/
 
 #figure(
   long-table(
-    columns: (1.5fr, 1.2fr, 2fr, 1.8fr, 1.5fr, 0.8fr),
+    columns: (1.2fr, 1fr, 2fr, 1.5fr, 1.2fr, 1.25fr),
     align: (left, left, left, left, left, left),
     inset: 6pt,
     [Класс], [Имя\ метода,\ функции], [Прототип], [Назначение], [Входные данные], [Выходные данные],
@@ -622,18 +734,23 @@ SuaiScheduleBotAnalytics/
     (ConsumeContext
     \<UserPerformed
     RequestMessage\> context)], [Обработка события просмотра расписания из Kafka и сохранение в БД], [context], [-],
-    [GetRegistered
-    UsersCount
-    QueryHandler], [Handle], [Task\<int\> Handle
+    [Get
+    Registered
+    Users
+    Count
+    Query
+    Handler], [Handle], [Task\<int\> Handle
     (GetRegistered
     UsersCountQuery query,
     CancellationToken
-    cancellationToken)], [Получение количества зарегистрировавшихся пользователей за период с валидацией диапазона дат], [query, cancellationToken], [int],
+    cancellationToken)], [Получение количества зарегистрировавшихся пользователей за период с валидацией диапазона дат], [query, cancellation
+    Token], [int],
     [GetGroup
     Schedule
     Requests
     Count
-    QueryHandler], [Handle], [Task\<int\> Handle
+    Query
+    Handler], [Handle], [Task\<int\> Handle
     (GetGroup
     Schedule
     RequestsCount
@@ -641,7 +758,8 @@ SuaiScheduleBotAnalytics/
     CancellationToken
     cancellationToken)], [Получение количества запросов на просмотр расписания групп за период], [query, cancellation
     Token], [int],
-    [RegisterUser
+    [Register
+    User
     Command
     Handler], [Handle], [Task Handle
     (RegisterUser
@@ -659,42 +777,58 @@ SuaiScheduleBotAnalytics/
     CancellationToken
     cancellationToken)], [Добавление записи о запросе расписания группы с созданием группы при необходимости], [command, cancellation
     Token], [-],
-    [SearchRequest
+    [Search
+    Request
     Handler], [Handle], [Task Handle
     (SearchCommand
     command,
     CancellationToken
-    cancellationToken)], [Добавление записи о поисковом запросе пользователя в БД], [command, cancellationToken], [-],
-    [RoomSchedule
-    CommandHandler], [Handle], [Task Handle
+    cancellationToken)], [Добавление записи о поисковом запросе пользователя в БД], [command, cancellation
+    Token], [-],
+    [Room
+    Schedule
+    Command
+    Handler], [Handle], [Task Handle
     (RoomSchedule
     Command command,
     CancellationToken
-    cancellationToken)], [Добавление записи о запросе расписания аудитории в БД], [command, cancellationToken], [-],
-    [TeacherSchedule
-    CommandHandler], [Handle], [Task Handle
+    cancellationToken)], [Добавление записи о запросе расписания аудитории в БД], [command, cancellation
+    Token], [-],
+    [Teacher
+    Schedule
+    Command
+    Handler], [Handle], [Task Handle
     (TeacherSchedule
     Command command,
     CancellationToken
-    cancellationToken)], [Добавление записи о запросе расписания преподавателя в БД], [command, cancellationToken], [-],
-    [SubscribeUser
+    cancellationToken)], [Добавление записи о запросе расписания преподавателя в БД], [command, cancellation
+    Token], [-],
+    [Subscribe
+    User
     ToGroup
-    CommandHandler], [Handle], [Task Handle
+    Command
+    Handler], [Handle], [Task Handle
     (SubscribeUser
     ToGroup
     Command command,
     CancellationToken
-    cancellationToken)], [Создание записи события подписки пользователя на группу с созданием группы при необходимости], [command, cancellationToken], [-],
-    [SetUserCustom
-    SettingsCommand
+    cancellationToken)], [Создание записи события подписки пользователя на группу с созданием группы при необходимости], [command, cancellation
+    Token], [-],
+    [SetUser
+    Custom
+    Settings
+    Command
     Handler], [Handle], [Task Handle
     (SetUserCustom
     SettingsCommand
     command,
     CancellationToken
-    cancellationToken)], [Создание записи события установки пользовательских настроек], [command, cancellationToken], [-],
-    [GetTopGroupsBy
-    SubscribersQuery
+    cancellationToken)], [Создание записи события установки пользовательских настроек], [command, cancellation
+    Token], [-],
+    [GetTop
+    GroupsBy
+    Subscribers
+    Query
     Handler], [Handle], [Task\<List\<Group
     AndSubscribers
     ResponseModel\>\>
@@ -703,45 +837,69 @@ SuaiScheduleBotAnalytics/
     SubscribersQuery
     query,
     CancellationToken
-    cancellationToken)], [Получение топ N групп по количеству уникальных подписчиков с валидацией параметров], [query, cancellationToken], [List\<Group
-    AndSubscribers
-    ResponseModel\>],
-    [GetTopGroupsBy
-    RequestsQuery
+    cancellationToken)], [Получение топ N групп по количеству уникальных подписчиков с валидацией параметров], [query, cancellation
+    Token], [List\<Group
+    And
+    Subscribers
+    Response
+    Model\>],
+    [GetTop
+    Groups
+    By
+    Requests
+    Query
     Handler], [Handle], [Task\<List\<Top
-    GroupByRequests
-    Dto\>\> Handle
+    Group
+    ByRequests
+    ResponseModel\>\> Handle
     (GetTopGroupsBy
     RequestsQuery query,
     CancellationToken
-    cancellationToken)], [Получение топ N групп по количеству запросов расписания с валидацией диапазона дат], [query, cancellationToken], [List\<Top
-    GroupByRequests
-    Dto\>],
-    [GetUnique
-    ScheduleViewers
-    CountQuery
+    cancellationToken)], [Получение топ N групп по количеству запросов расписания с валидацией диапазона дат], [query, cancellation
+    Token], [List\<Top
+    Group
+    ByRequests
+    Response
+    Model\>],
+    [Get
+    Unique
+    Schedule
+    Viewers
+    Count
+    Query
     Handler], [Handle], [Task\<int\> Handle
     (GetUnique
     ScheduleViewers
     CountQuery query,
     CancellationToken
-    cancellationToken)], [Получение количества уникальных пользователей, просмотревших расписание (любого типа) за период], [query, cancellationToken], [int],
-    [DateRange
-    Validator], [ValidateDateRange], [void ValidateDateRange
+    cancellationToken)], [Получение количества уникальных пользователей, просмотревших расписание (любого типа) за период], [query, cancellation
+    Token], [int],
+    [Date
+    Range
+    Validator], [Validate
+    Date
+    Range], [void ValidateDateRange
     (DateTimeOffset? from,
     DateTimeOffset? to)], [Валидация корректности диапазона дат (from не позже to)], [from, to], [-],
-    [DateRange
-    Validator], [ValidateNotFuture], [void ValidateNotFuture
+    [Date
+    Range
+    Validator], [Validate
+    Not
+    Future], [void ValidateNotFuture
     (DateTimeOffset? date,
-    string parameterName)], [Валидация что дата не находится в будущем], [date, parameterName], [-],
-    [NumericParameter
-    Validator], [ValidatePositive
+    string parameterName)], [Валидация что дата не находится в будущем], [date, parameter
+    Name], [-],
+    [Numeric
+    Parameter
+    Validator], [Validate
+    Positive
     Integer], [void ValidatePositive
     Integer
     (int value,
     string parameterName,
     int minValue,
-    int maxValue)], [Валидация что числовой параметр находится в допустимом диапазоне], [value, parameterName, minValue, maxValue], [-],
+    int maxValue)], [Валидация что числовой параметр находится в допустимом диапазоне], [value, parameter
+    Name, minValue, maxValue], [-],
   ),
   caption: "Описание основных функций и методов",
   kind: table
@@ -751,7 +909,7 @@ SuaiScheduleBotAnalytics/
 
 *Оптимизация производительности* достигается использованием асинхронных операций (async/await) для non-blocking I/O, query splitting в Entity Framework Core для оптимизации запросов с Include(), использованием индексов на часто используемых полях (UserId, GroupId, OccuredAt), кэшированием результатов часто запрашиваемых данных.
 
-*Оптимизация объема кода* включает использование DI контейнера для избежания дублирования логики, применение паттернов MediatR и Repository для уменьшения связанности компонентов, использование интерфейсов для абстрагирования реализации.
+*Оптимизация объема кода* включает использование DI контейнера для избежания дублирования логики, применение паттерна медиатор для уменьшения связанности компонентов, использование интерфейсов для абстрагирования реализации.
 
 *Масштабируемость системы* обеспечивается микросервисной архитектурой, которая позволяет масштабировать компоненты независимо. Асинхронная обработка через Kafka позволяет обрабатывать пиковые нагрузки без перегруженности. Stateless дизайн API позволяет горизонтальное масштабирование приложения.
 
@@ -1298,14 +1456,8 @@ UserPerformedRequestConsumer.cs
 UserUpdatedMessageConsumer.cs
 #raw(read("../../AI/SuaiScheduleBotAnalytics/src/SuaiScheduleBotAnalytics.Application/Kafka/UserUpdatedMessageConsumer.cs"), lang: "cs", block: true)
 
-IAnalyticsReadRepository.cs
-#raw(read("../../AI/SuaiScheduleBotAnalytics/src/SuaiScheduleBotAnalytics.Contracts/IAnalyticsReadRepository.cs"), lang: "cs", block: true)
-
-IAnalyticsWriteRepository.cs
-#raw(read("../../AI/SuaiScheduleBotAnalytics/src/SuaiScheduleBotAnalytics.Contracts/IAnalyticsWriteRepository.cs"), lang: "cs", block: true)
-
 AnalyticsDbContext.cs
-#raw(read("../../AI/SuaiScheduleBotAnalytics/src/SuaiScheduleBotAnalytics.DataLayer.EF/Persistence/AnalyticsDbContext.cs"), lang: "cs", block: true)
+#raw(read("../../AI/SuaiScheduleBotAnalytics/src/SuaiScheduleBotAnalytics.DataLayer.EF/AnalyticsDbContext.cs"), lang: "cs", block: true)
 
 UserEntityConfiguration.cs
 #raw(read("../../AI/SuaiScheduleBotAnalytics/src/SuaiScheduleBotAnalytics.DataLayer.EF/Configuration/UserEntityConfiguration.cs"), lang: "cs", block: true)
