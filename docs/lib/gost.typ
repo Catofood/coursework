@@ -76,6 +76,7 @@
  {
     if true {
       show outline: set block(below: 1.25cm / 2)
+      show outline: set text(hyphenate: false)
       show heading: it => {
         set text(size: 14pt)
         set align(center)
